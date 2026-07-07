@@ -11,8 +11,8 @@ using PrinterCare.Server.Data;
 namespace PrinterCare.Server.Migrations
 {
     [DbContext(typeof(AppDataContext))]
-    [Migration("20260707053401_UserMigration")]
-    partial class UserMigration
+    [Migration("20260707074906_UserMigrationModif")]
+    partial class UserMigrationModif
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -26,18 +26,23 @@ namespace PrinterCare.Server.Migrations
 
             modelBuilder.Entity("PrinterCare.Server.Models.User", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");

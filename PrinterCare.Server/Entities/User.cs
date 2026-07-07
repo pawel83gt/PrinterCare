@@ -1,15 +1,19 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PrinterCare.Server.Models
+namespace PrinterCare.Server.Entities
 {
     public class User
     {
         [Key]
-        public long Id { get; set; }
+        public int Id { get; set; }
 
         [Required]
         [MaxLength(100)]
-        public string Name { get; set; } = string.Empty;
+        public string FirstName { get; set; } = string.Empty;
+
+        [Required]
+        [MaxLength(100)]
+        public string LastName { get; set; } = string.Empty;
 
         [Required]
         [EmailAddress]

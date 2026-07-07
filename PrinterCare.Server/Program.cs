@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using PrinterCare.Server;
+using PrinterCare.Server.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 //Подключение БД
@@ -12,6 +12,12 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDataContext>();
+    db.Database.Migrate();
+}
 
 app.UseDefaultFiles();
 app.MapStaticAssets();
