@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="printercare.client/printercare.client.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="PrinterCare.Server/PrinterCare.Server.csproj" />
+</Solution>
