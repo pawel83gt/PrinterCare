@@ -10,7 +10,7 @@ using PrinterCare.Server.Data;
 
 namespace PrinterCare.Server.Migrations
 {
-    [DbContext(typeof(AppDataContext))]
+    [DbContext(typeof(ApplicationDbContext))]
     [Migration("20260707053401_UserMigration")]
     partial class UserMigration
     {

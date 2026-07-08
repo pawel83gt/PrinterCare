@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PrinterCare.Server.Data;
@@ -11,9 +12,11 @@ using PrinterCare.Server.Data;
 namespace PrinterCare.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class AppDataContextModelSnapshot : ModelSnapshot
+    [Migration("20260708053722_Migration080726")]
+    partial class Migration080726
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

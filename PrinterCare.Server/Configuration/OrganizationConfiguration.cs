@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using PrinterCare.Server.Entities;
 
-namespace PrinterCare.Server.Entities
+namespace PrinterCare.Server.Configuration
 {
-    public class OrganizationConfiguration
+    public class OrganizationConfiguration : IEntityTypeConfiguration<Organization>
     {
         public void Configure(EntityTypeBuilder<Organization> builder)
         {

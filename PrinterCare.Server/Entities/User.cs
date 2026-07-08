@@ -2,11 +2,8 @@
 
 namespace PrinterCare.Server.Entities
 {
-    public class User
+    public class User :BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
-
         [Required]
         [MaxLength(100)]
         public string FirstName { get; set; } = string.Empty;

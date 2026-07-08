@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-namespace PrinterCare.Server.Entities
+using PrinterCare.Server.Entities;
+namespace PrinterCare.Server.Configuration
 {
     public class BranchConfiguration :IEntityTypeConfiguration<Branch>
     {

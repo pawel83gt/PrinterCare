@@ -1,9 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 using PrinterCare.Server.Data;
+using PrinterCare.Server.Interfaces;
+using PrinterCare.Server.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 //Подключение БД
-builder.Services.AddDbContext<AppDataContext>(o => o.UseNpgsql(builder.Configuration.GetConnectionString("printersDB")));
+builder.Services.AddDbContext<ApplicationDbContext>(o => o.UseNpgsql(builder.Configuration.GetConnectionString("printersDB")));
+
+// Регистрация репозиториев
+builder.Services.AddScoped<IOrganizationRepository, OrganizationRepository>();
 
 // Add services to the container.
 
@@ -15,7 +20,7 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<AppDataContext>();
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     db.Database.Migrate();
 }
 
