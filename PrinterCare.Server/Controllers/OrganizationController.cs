@@ -8,11 +8,11 @@ namespace PrinterCare.Server.Controllers
     [ApiController]
     public class OrganizationsController : ControllerBase
     {
-        private readonly IOrganizationRepository _repository;
+        private readonly IOrganizationService _service;
 
-        public OrganizationsController(IOrganizationRepository repository)
+        public OrganizationsController(IOrganizationService service)
         {
-            _repository = repository;
+            _service = service;
         }
 
         [HttpGet]
@@ -25,7 +25,7 @@ namespace PrinterCare.Server.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var organization = await _repository.GetbyIdAsync(id);
+            var organization = await _repository.GetByIdAsync(id);
             if (organization == null)
                 return NotFound();
             return Ok(organization);
@@ -34,7 +34,11 @@ namespace PrinterCare.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Organization organization)
         {
-            await _repository.AddAsync(organization);
+            var result = await _service.CreateOrganizationAsync(organization);
+
+            if (!result)
+                return Conflict("Organization with this name already exists.");
+
             return CreatedAtAction(nameof(GetById), new { id = organization.Id }, organization);
         }
 
@@ -44,7 +48,7 @@ namespace PrinterCare.Server.Controllers
             if (id != organization.Id)
                 return BadRequest("ID mismatch");
 
-            var existing = await _repository.GetbyIdAsync(id);
+            var existing = await _repository.GetByIdAsync(id);
             if (existing == null)
                 return NotFound();
 
@@ -55,7 +59,7 @@ namespace PrinterCare.Server.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var organization = await _repository.GetbyIdAsync(id);
+            var organization = await _repository.GetByIdAsync(id);
             if (organization == null)
                 return NotFound();
 

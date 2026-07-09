@@ -1,9 +1,10 @@
-﻿using PrinterCare.Server.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using PrinterCare.Server.Entities;
 using PrinterCare.Server.Interfaces;
 
 namespace PrinterCare.Server.Services
 {
-    public class OrganizationService
+    public class OrganizationService :IOrganizationService
     {
         private readonly IOrganizationRepository _repository;
 
@@ -12,7 +13,7 @@ namespace PrinterCare.Server.Services
             _repository = repository;
         }
 
-        public async Task<bool> CreateOrganizationWithValidationAsync(Organization organization)
+        public async Task<bool> CreateOrganizationAsync(Organization organization)
         {
             // Логика проверки (существует ли уже организация с таким названием)
             if (await _repository.ExistsAsync(organization.Name))
@@ -20,6 +21,15 @@ namespace PrinterCare.Server.Services
 
             await _repository.AddAsync(organization);
             return true;
+        }
+        public async Task<IEnumerable<Organization>> GetAllOrganizationsAsync()
+        {
+            return await _repository.GetAllAsync();
+        }
+
+        public async Task<Organization?> GetByIdAsync(int id)
+        {
+            return await _repository.GetByIdAsync(id);
         }
     }
 }

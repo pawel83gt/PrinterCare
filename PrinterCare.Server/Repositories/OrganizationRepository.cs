@@ -20,10 +20,10 @@ namespace PrinterCare.Server.Repositories
         public async Task<IEnumerable<Organization>> GetAllAsync()
         {
             // Получаем все организации из базы данных
-            return await _context.Organizations.AsNoTracking().ToListAsync();
+            return await _context.Organizations.AsNoTracking().OrderBy(o => o.Name).ToListAsync();
         }
 
-        public async Task<Organization?> GetbyIdAsync(int id)
+        public async Task<Organization?> GetByIdAsync(int id)
         {
             // Ищем организацию по Id, возвращаем null, если не найдена
             return await _context.Organizations

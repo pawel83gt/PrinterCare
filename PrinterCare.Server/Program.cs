@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using PrinterCare.Server.Data;
+using PrinterCare.Server.Entities;
 using PrinterCare.Server.Interfaces;
 using PrinterCare.Server.Repositories;
+using PrinterCare.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 //Подключение БД
@@ -9,6 +11,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(o => o.UseNpgsql(builder.Con
 
 // Регистрация репозиториев
 builder.Services.AddScoped<IOrganizationRepository, OrganizationRepository>();
+builder.Services.AddScoped<IOrganizationService, OrganizationService>();
 
 // Add services to the container.
 
