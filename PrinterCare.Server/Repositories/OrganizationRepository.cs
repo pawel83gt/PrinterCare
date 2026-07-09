@@ -10,10 +10,7 @@ namespace PrinterCare.Server.Repositories
         // 2. Внедряем DbContext через конструктор
         private readonly ApplicationDbContext _context;
 
-        public OrganizationRepository(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        public OrganizationRepository(ApplicationDbContext context) => _context = context;
 
         // 3. Реализуем методы интерфейса
 
@@ -39,14 +36,16 @@ namespace PrinterCare.Server.Repositories
 
         public async Task UpdateAsync(Organization organization)
         {
-            // Обновляем существующую организацию
-            _context.Organizations.Update(organization);
+            var existing = await _context.Organizations.FindAsync(organization.Id) ?? throw new KeyNotFoundException($"Organization with id {organization.Id} not found");
+
+            // Обновляем только нужные поля (чтобы не перезаписать другие данные)
+            _context.Entry(existing).CurrentValues.SetValues(organization);
             await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(Organization organization)
         {
-            // Удаляем организацию из контекста и сохраняем в БД
+
             _context.Organizations.Remove(organization);
             await _context.SaveChangesAsync();
         }

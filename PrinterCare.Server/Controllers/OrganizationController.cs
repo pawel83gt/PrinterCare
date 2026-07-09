@@ -10,22 +10,19 @@ namespace PrinterCare.Server.Controllers
     {
         private readonly IOrganizationService _service;
 
-        public OrganizationsController(IOrganizationService service)
-        {
-            _service = service;
-        }
+        public OrganizationsController(IOrganizationService service) => _service = service;
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var organizations = await _repository.GetAllAsync();
+            var organizations = await _service.GetAllOrganizationsAsync();
             return Ok(organizations);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var organization = await _repository.GetByIdAsync(id);
+            var organization = await _service.GetByIdAsync(id);
             if (organization == null)
                 return NotFound();
             return Ok(organization);
@@ -48,23 +45,33 @@ namespace PrinterCare.Server.Controllers
             if (id != organization.Id)
                 return BadRequest("ID mismatch");
 
-            var existing = await _repository.GetByIdAsync(id);
-            if (existing == null)
-                return NotFound();
-
-            await _repository.UpdateAsync(organization);
-            return NoContent();
+            try
+            {
+                var updated = await _service.UpdateOrganizationAsync(organization);
+                return Ok(updated);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+             return Conflict(ex.Message);
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var organization = await _repository.GetByIdAsync(id);
-            if (organization == null)
-                return NotFound();
-
-            await _repository.DeleteAsync(organization);
-            return NoContent();
+            try
+            {
+                await _service.DeleteOrganizationAsync(id);
+                return NoContent(); // 204 - успешно удалено
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound(); // 404 - организация не найдена
+            }
         }
     }
 }
