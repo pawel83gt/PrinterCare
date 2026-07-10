@@ -48,7 +48,7 @@ export default defineConfig({
     server: {
         proxy: {
             "/api": {
-        target: "https://localhost:7033",
+        target,
         changeOrigin: true,
         secure: false,
       }
@@ -58,5 +58,5 @@ export default defineConfig({
             key: fs.readFileSync(keyFilePath),
             cert: fs.readFileSync(certFilePath),
         }
-    }
+    } 
 })

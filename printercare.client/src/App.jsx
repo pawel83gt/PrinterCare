@@ -9,7 +9,7 @@ function App() {
 
   useEffect(() => {
     loadOrganizations();
-    console.log("список - ", organizations);
+    
   }, []);
 
   const loadOrganizations = async () => {
@@ -19,7 +19,8 @@ function App() {
       const response = await OrganizationApi.getAll();
       setOrganizations(response.data);
     } catch (error) {
-      console.error('Ошибка при загрузке:', err);
+      console.error('Ошибка при загрузке:', error);
+      setError(error)
     } finally {
       setLoading(false);
     }
