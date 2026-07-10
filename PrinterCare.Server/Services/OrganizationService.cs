@@ -40,7 +40,7 @@ namespace PrinterCare.Server.Services
 
             // 3. Вызов репозитория
             await _repository.UpdateAsync(organization);
-            return organization;
+            return existing;
         }
 
         public async Task DeleteOrganizationAsync(int id)

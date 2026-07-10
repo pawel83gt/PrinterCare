@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/immutability */
 import { useState, useEffect } from 'react';
+import { OrganizationApi } from './api/OrganizationApi';
 
 function App() {
   const [organizations, setOrganizations] = useState([]);
@@ -8,18 +9,16 @@ function App() {
 
   useEffect(() => {
     loadOrganizations();
+    console.log("список - ", organizations);
   }, []);
 
-  async function loadOrganizations() {
+  const loadOrganizations = async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch('/api/organizations');
-      if (!response.ok) throw new Error('Ошибка загрузки данных');
-      const data = await response.json();
-      setOrganizations(data);
-    } catch (err) {
-      setError(err.message);
+      const response = await OrganizationApi.getAll();
+      setOrganizations(response.data);
+    } catch (error) {
       console.error('Ошибка при загрузке:', err);
     } finally {
       setLoading(false);

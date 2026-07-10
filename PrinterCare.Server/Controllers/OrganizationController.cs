@@ -13,14 +13,14 @@ namespace PrinterCare.Server.Controllers
         public OrganizationsController(IOrganizationService service) => _service = service;
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAllAsync()
         {
             var organizations = await _service.GetAllOrganizationsAsync();
             return Ok(organizations);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetByIdAsync(int id)
         {
             var organization = await _service.GetByIdAsync(id);
             if (organization == null)
@@ -29,18 +29,18 @@ namespace PrinterCare.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Organization organization)
+        public async Task<IActionResult> CreateAsync([FromBody] Organization organization)
         {
             var result = await _service.CreateOrganizationAsync(organization);
 
             if (!result)
                 return Conflict("Organization with this name already exists.");
 
-            return CreatedAtAction(nameof(GetById), new { id = organization.Id }, organization);
+            return CreatedAtAction(nameof(GetByIdAsync), new { id = organization.Id }, organization);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] Organization organization)
+        public async Task<IActionResult> UpdateAsync(int id, [FromBody] Organization organization)
         {
             if (id != organization.Id)
                 return BadRequest("ID mismatch");
@@ -61,7 +61,7 @@ namespace PrinterCare.Server.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> DeleteAsync(int id)
         {
             try
             {

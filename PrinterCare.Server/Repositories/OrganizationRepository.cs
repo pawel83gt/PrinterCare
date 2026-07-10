@@ -23,7 +23,7 @@ namespace PrinterCare.Server.Repositories
         public async Task<Organization?> GetByIdAsync(int id)
         {
             // Ищем организацию по Id, возвращаем null, если не найдена
-            return await _context.Organizations
+            return await _context.Organizations.AsNoTracking()
                 .FirstOrDefaultAsync(o => o.Id == id);
         }
 
