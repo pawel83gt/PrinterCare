@@ -32,6 +32,7 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+app.UseRouting();
 
 app.UseCors("ReactPolicy");
 
@@ -53,6 +54,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseRouting();
 
 app.UseAuthorization();
 

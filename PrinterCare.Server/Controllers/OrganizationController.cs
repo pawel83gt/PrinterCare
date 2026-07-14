@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using PrinterCare.Server.Interfaces;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+using PrinterCare.Server.DTOs.Organization;
 using PrinterCare.Server.Entities;
+using PrinterCare.Server.Interfaces;
 
 namespace PrinterCare.Server.Controllers
 {
@@ -13,14 +15,14 @@ namespace PrinterCare.Server.Controllers
         public OrganizationsController(IOrganizationService service) => _service = service;
 
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<IActionResult> GetAll()
         {
             var organizations = await _service.GetAllOrganizationsAsync();
             return Ok(organizations);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetByIdAsync(int id)
+        public async Task<IActionResult> GetById(Guid id)
         {
             var organization = await _service.GetByIdAsync(id);
             if (organization == null)
@@ -29,25 +31,26 @@ namespace PrinterCare.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAsync([FromBody] Organization organization)
+        public async Task<IActionResult> Create(CreateOrganizationDto dto)
         {
-            var result = await _service.CreateOrganizationAsync(organization);
+            var result = await _service.CreateOrganizationAsync(dto);
 
-            if (!result)
+            if (result == null)
                 return Conflict("Organization with this name already exists.");
-
-            return CreatedAtAction(nameof(GetByIdAsync), new { id = organization.Id }, organization);
+            //возврат 201 и возврат объекта
+            return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+            
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsync(int id, [FromBody] Organization organization)
+        public async Task<IActionResult> Update(Guid id, [FromBody] OrganizationDto dto)
         {
-            if (id != organization.Id)
+            if (id != dto.Id)
                 return BadRequest("ID mismatch");
 
             try
             {
-                var updated = await _service.UpdateOrganizationAsync(organization);
+                var updated = await _service.UpdateOrganizationAsync(dto);
                 return Ok(updated);
             }
             catch (KeyNotFoundException ex)
@@ -61,7 +64,7 @@ namespace PrinterCare.Server.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAsync(int id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             try
             {

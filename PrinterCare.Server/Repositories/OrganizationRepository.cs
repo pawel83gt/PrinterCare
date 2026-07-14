@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PrinterCare.Server.Data;       
+using PrinterCare.Server.Data;
+using PrinterCare.Server.DTOs.Organization;
 using PrinterCare.Server.Entities;
 using PrinterCare.Server.Interfaces;
 
@@ -20,11 +21,18 @@ namespace PrinterCare.Server.Repositories
             return await _context.Organizations.AsNoTracking().OrderBy(o => o.Name).ToListAsync();
         }
 
-        public async Task<Organization?> GetByIdAsync(int id)
+        public async Task<OrganizationDto?> GetByIdAsync(Guid id)
         {
             // Ищем организацию по Id, возвращаем null, если не найдена
-            return await _context.Organizations.AsNoTracking()
+            var result = await _context.Organizations.AsNoTracking()
                 .FirstOrDefaultAsync(o => o.Id == id);
+            if (result == null)
+                return null;
+            return new OrganizationDto
+            {
+                Id = result.Id,
+                Name = result.Name,
+            };
         }
 
         public async Task AddAsync(Organization organization)
@@ -34,18 +42,21 @@ namespace PrinterCare.Server.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(Organization organization)
+        public async Task UpdateAsync(OrganizationDto dto)
         {
-            var existing = await _context.Organizations.FindAsync(organization.Id) ?? throw new KeyNotFoundException($"Organization with id {organization.Id} not found");
+            var existing = await _context.Organizations.FindAsync(dto.Id) ?? throw new KeyNotFoundException($"Organization with id {dto.Id} not found");
 
             // Обновляем только нужные поля (чтобы не перезаписать другие данные)
-            _context.Entry(existing).CurrentValues.SetValues(organization);
+            _context.Entry(existing).CurrentValues.SetValues(dto);
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(Organization organization)
+        public async Task DeleteAsync(OrganizationDto dto)
         {
-
+            var organization = await _context.Organizations.FindAsync(dto.Id);
+            if (organization == null)
+                return;
+            
             _context.Organizations.Remove(organization);
             await _context.SaveChangesAsync();
         }
