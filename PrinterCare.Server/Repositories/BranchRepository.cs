@@ -28,7 +28,7 @@ namespace PrinterCare.Server.Repositories
 
         public async Task <BranchDto?> GetByIdAsync(Guid id)
         {
-            var branch = await _context.Branches.AsNoTracking().Include(b => b.Organization).FirstOrDefaultAsync(b =>  b.Id == id);
+            var branch = await _context.Branches.AsNoTracking().FirstOrDefaultAsync(b =>  b.Id == id);
 
             if (branch == null)
                 return null;
@@ -38,7 +38,7 @@ namespace PrinterCare.Server.Repositories
                 Id = branch.Id,
                 Name = branch.Name,
                 OrganizationId = branch.OrganizationId,
-                OrganizationName = branch.Organization?.Name ?? "Неизвестно",
+                OrganizationName = branch.Organization != null ? branch.Organization.Name : "Неизвестно",
             };
         }
 
