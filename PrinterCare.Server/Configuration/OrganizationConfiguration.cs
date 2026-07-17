@@ -16,6 +16,8 @@ namespace PrinterCare.Server.Configuration
 
             builder.Property(o => o.CreatedAt)
                 .IsRequired();
+
+            builder.HasMany(o => o.Branches);
         }
     }
 }

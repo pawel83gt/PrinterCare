@@ -19,6 +19,9 @@ namespace PrinterCare.Server.Configuration
             builder.HasOne(b => b.Organization)
                 .WithMany(o => o.Branches)
                 .HasForeignKey(b => b.OrganizationId);
+
+            //связь один филиал - множество оборудования
+            builder.HasMany(b => b.Equipments);
         }
 
     }

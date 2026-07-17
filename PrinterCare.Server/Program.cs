@@ -13,6 +13,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(o => o.UseNpgsql(builder.Con
 builder.Services.AddScoped<IOrganizationRepository, OrganizationRepository>();
 builder.Services.AddScoped<IOrganizationService, OrganizationService>();
 
+builder.Services.AddScoped<IBranchRepository, BranchRepository>();
+builder.Services.AddScoped<IBranchService, BranchService>();
+
+builder.Services.AddScoped<IManufacturerRepository, ManufacturerRepository>();
+builder.Services.AddScoped<IManufacturerService, ManufacturerService>();
+
+builder.Services.AddScoped<IEquipmentModelRepository, EquipmentModelRepository>();
+builder.Services.AddScoped<IEquipmentModelService, EquipmentModelService>();
+
 // Add services to the container.
 
 builder.Services.AddControllers();

@@ -10,5 +10,6 @@ namespace PrinterCare.Server.Entities
         public Guid OrganizationId { get; set; }
 
         public Organization Organization { get; set; } = null!;
+        public ICollection<Equipment> Equipments { get; set; } = new List<Equipment>();
     }
 }
