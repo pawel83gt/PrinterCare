@@ -22,6 +22,7 @@ namespace PrinterCare.Server.Services
                 Alias = dto.Alias,
                 Type = (EquipmentType)dto.Type,
                 BranchId = dto.BranchId,
+                EquipmentModelId = dto.EquipmentModelId,
             };
             await _repository.AddAsync(equipment);
             return new EquipmentDto
@@ -71,11 +72,11 @@ namespace PrinterCare.Server.Services
             // 1. Бизнес-правило: нельзя обновить несуществующего производителя
             Equipment existing = await _repository.GetByIdAsync(id) ?? throw new KeyNotFoundException($"Equipment with id {id} not found");
             // 2. Проверяем, изменилcя ли Type
-            bool typeChangedName = (int)existing.Type == dto.Type;
-            bool branchIdChangedName = existing.BranchId == dto.BranchId;
-            bool EquipmentModelIdName = existing.EquipmentModelId == dto.EquipmentModelId;
+            bool typeUnchanged = (int)existing.Type == dto.Type;
+            bool branchIdUnchanged = existing.BranchId == dto.BranchId;
+            bool EquipmentModelIdUnchanged = existing.EquipmentModelId == dto.EquipmentModelId;
             // 3. Если ничего не изменилось — возвращаем существующий объект
-            if (typeChangedName && branchIdChangedName && EquipmentModelIdName)
+            if (typeUnchanged && branchIdUnchanged && EquipmentModelIdUnchanged)
             {
                 return (new EquipmentDto {
                     Type = (int)existing.Type,
@@ -112,7 +113,7 @@ namespace PrinterCare.Server.Services
             if (existing == null)
                 throw new KeyNotFoundException($"Equipment with id {id} not found");
 
-            await _repository.DeleteAsync(existing.Id);
+            await _repository.DeleteAsync(id);
         }
     }
 }
