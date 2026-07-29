@@ -5,10 +5,10 @@ namespace PrinterCare.Server.Interfaces
 {
     public interface IOrganizationRepository
     {
-        Task<IEnumerable<Organization>> GetAllAsync();
+        Task<IEnumerable<OrganizationDto>> GetAllAsync();
         Task<OrganizationDto?> GetByIdAsync(Guid id);
         Task AddAsync(Organization organization);
-        Task UpdateAsync(OrganizationDto dto);
+        Task UpdateAsync(Organization organization);
         Task DeleteAsync(OrganizationDto dto);
         Task<bool> ExistsAsync(string name);
 

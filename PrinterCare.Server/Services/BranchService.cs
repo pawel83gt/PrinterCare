@@ -25,11 +25,17 @@ namespace PrinterCare.Server.Services
 
             await _repository.AddAsync(branch);
 
+            var createdBranch = await _repository.GetByIdAsync(branch.Id);
+
+            if (createdBranch == null)
+                return null;
+
             return new BranchDto
             {
-                Id = branch.Id,
-                Name = branch.Name,
-                OrganizationId = branch.OrganizationId,
+                Id = createdBranch.Id,
+                Name = createdBranch.Name,
+                OrganizationId = createdBranch.OrganizationId,
+                OrganizationName = createdBranch.OrganizationName,
             };
         }
 
@@ -43,11 +49,11 @@ namespace PrinterCare.Server.Services
             return await _repository.GetByIdAsync(id);
         }
 
-        public async Task<UpdateBranchDto> UpdateBranchAsync(UpdateBranchDto dto)
+        public async Task<(BranchDto Data, string Message)> UpdateBranchAsync(Guid id, UpdateBranchDto dto)
         {
             // 1. Бизнес-правило: нельзя обновить несуществующую организацию
-            BranchDto existing = await _repository.GetByIdAsync(dto.Id) ?? throw new KeyNotFoundException($"Branch with id {dto.Id} not found");
-
+            BranchDto existing = await _repository.GetByIdAsync(id) ?? throw new KeyNotFoundException($"Branch with id {id} not found");
+            
             // 2. Проверяем, изменилось ли имя
             bool nameChanged = existing.Name != dto.Name;
 
@@ -66,14 +72,24 @@ namespace PrinterCare.Server.Services
             // 5. Если ничего не изменилось — возвращаем существующий объект
             if (!nameChanged && !organizationChanged)
             {
-                return dto; // ✅ Ничего не обновляем
+                return (new BranchDto { Id = id, Name = dto.Name, OrganizationId = dto.OrganizationId }, "Данные остались прежние"); // ✅ Ничего не обновляем
             }
 
-            var updateBranch = new UpdateBranchDto { Id = dto.Id, Name = dto.Name, OrganizationId = dto.OrganizationId };
+            var updateBranch = new BranchDto { Id = id, Name = dto.Name, OrganizationId = dto.OrganizationId };
 
             // 6. Вызов репозитория
-            await _repository.UpdateAsync(updateBranch);
-            return updateBranch;
+            await _repository.UpdateAsync(new Branch { Id = id, Name = dto.Name, OrganizationId = dto.OrganizationId});
+            var updated = await _repository.GetByIdAsync(id);
+            if (updated == null)
+                throw new KeyNotFoundException($"Branch with id {id} not found after update");
+
+            return (new BranchDto
+            {
+                Id = updated.Id,
+                Name = updated.Name,
+                OrganizationId = updated.OrganizationId,
+                OrganizationName = updated.OrganizationName
+            }, "Данные обновлены");
         }
 
         public async Task DeleteBranchAsync(Guid id)

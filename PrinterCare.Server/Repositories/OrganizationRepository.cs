@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PrinterCare.Server.Data;
+using PrinterCare.Server.DTOs.Branch;
 using PrinterCare.Server.DTOs.Organization;
 using PrinterCare.Server.Entities;
 using PrinterCare.Server.Interfaces;
@@ -15,24 +16,51 @@ namespace PrinterCare.Server.Repositories
 
         // 3. Реализуем методы интерфейса
 
-        public async Task<IEnumerable<Organization>> GetAllAsync()
+        public async Task<IEnumerable<OrganizationDto>> GetAllAsync()
         {
-            // Получаем все организации из базы данных
-            return await _context.Organizations.AsNoTracking().OrderBy(o => o.Name).ToListAsync();
+            return await _context.Organizations
+                .AsNoTracking()
+                .OrderBy(o => o.Name)
+                .Select(o => new OrganizationDto
+                {
+                    Id = o.Id,
+                    Name = o.Name,
+                    Branches = o.Branches
+                        .OrderBy(b => b.Name)
+                        .Select(b => new BranchDto
+                        {
+                            Id = b.Id,
+                            Name = b.Name,
+                            OrganizationId = b.OrganizationId,
+                            OrganizationName = o.Name
+                        })
+                        .ToList()
+                })
+                .ToListAsync();
         }
 
         public async Task<OrganizationDto?> GetByIdAsync(Guid id)
         {
-            // Ищем организацию по Id, возвращаем null, если не найдена
-            var result = await _context.Organizations.AsNoTracking()
-                .FirstOrDefaultAsync(o => o.Id == id);
-            if (result == null)
-                return null;
-            return new OrganizationDto
-            {
-                Id = result.Id,
-                Name = result.Name,
-            };
+            return await _context.Organizations
+                .AsNoTracking()
+                .Where(o => o.Id == id)
+                .Select(o => new OrganizationDto
+                {
+                    Id = o.Id,
+                    Name = o.Name,
+
+                    Branches = o.Branches
+                        .OrderBy(b => b.Name)
+                        .Select(b => new BranchDto
+                        {
+                            Id = b.Id,
+                            Name = b.Name,
+                            OrganizationId = b.OrganizationId,
+                            OrganizationName = o.Name
+                        })
+                        .ToList()
+                })
+                .FirstOrDefaultAsync(); ;
         }
 
         public async Task AddAsync(Organization organization)
@@ -42,12 +70,10 @@ namespace PrinterCare.Server.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(OrganizationDto dto)
+        public async Task UpdateAsync(Organization organization)
         {
-            var existing = await _context.Organizations.FindAsync(dto.Id) ?? throw new KeyNotFoundException($"Organization with id {dto.Id} not found");
-
             // Обновляем только нужные поля (чтобы не перезаписать другие данные)
-            _context.Entry(existing).CurrentValues.SetValues(dto);
+            _context.Entry(organization).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
 

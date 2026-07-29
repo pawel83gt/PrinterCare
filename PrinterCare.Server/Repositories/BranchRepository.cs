@@ -28,18 +28,15 @@ namespace PrinterCare.Server.Repositories
 
         public async Task <BranchDto?> GetByIdAsync(Guid id)
         {
-            var branch = await _context.Branches.AsNoTracking().FirstOrDefaultAsync(b =>  b.Id == id);
-
-            if (branch == null)
-                return null;
-
-            return new BranchDto
+            return await _context.Branches.AsNoTracking().Where(b => b.Id == id).Select(b => new BranchDto
             {
-                Id = branch.Id,
-                Name = branch.Name,
-                OrganizationId = branch.OrganizationId,
-                OrganizationName = branch.Organization != null ? branch.Organization.Name : "Неизвестно",
-            };
+                Id = b.Id,
+                Name = b.Name,
+                OrganizationId = b.OrganizationId,
+                OrganizationName = b.Organization != null
+                    ? b.Organization.Name
+                    : "Неизвестно"
+            }).FirstOrDefaultAsync();
         }
 
         public async Task AddAsync(Branch branch)
@@ -48,12 +45,12 @@ namespace PrinterCare.Server.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(UpdateBranchDto dto)
+        public async Task UpdateAsync(Branch branch)
         {
-            var existing = await _context.Branches.FindAsync(dto.Id) ?? throw new KeyNotFoundException($"Organization with id {dto.Id} not found");
+            var existing = await _context.Branches.FindAsync(branch.Id) ?? throw new KeyNotFoundException($"Organization with id {branch.Id} not found");
 
             // Обновляем только нужные поля (чтобы не перезаписать другие данные)
-            _context.Entry(existing).CurrentValues.SetValues(dto);
+            _context.Entry(existing).CurrentValues.SetValues(branch);
             await _context.SaveChangesAsync();
         }
 

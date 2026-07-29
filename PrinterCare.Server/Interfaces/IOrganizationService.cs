@@ -6,9 +6,9 @@ namespace PrinterCare.Server.Interfaces
     public interface IOrganizationService
     {
         Task<OrganizationDto?> CreateOrganizationAsync(CreateOrganizationDto dto);
-        Task<IEnumerable<Organization>> GetAllOrganizationsAsync();
+        Task<IEnumerable<OrganizationDto>> GetAllOrganizationsAsync();
         Task<OrganizationDto?> GetByIdAsync(Guid id);
-        Task<OrganizationDto> UpdateOrganizationAsync(OrganizationDto dto);
+        Task<(OrganizationDto Data, string Message)> UpdateOrganizationAsync(Guid id, UpdateOrganizationDto dto);
         Task DeleteOrganizationAsync(Guid id);
     }
 }

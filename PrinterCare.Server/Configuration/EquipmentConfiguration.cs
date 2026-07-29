@@ -21,12 +21,17 @@ namespace PrinterCare.Server.Configuration
                 .WithMany(b => b.Equipments)// Филиал имеет много оборудования
                 .HasForeignKey(e => e.BranchId);// Внешний ключ в Equipment
 
-            //Связь многие к одному Оборудование => Модель
+            //Связь многие к одному Оборудование => Модель оборудования
             builder
                 .HasOne(e => e.EquipmentModel) //Каждый экземпляр Equipment ссылается на одну конкретную модель (Model).
                 .WithMany(em => em.Equipments) //Одна модель может быть использована во множестве единиц оборудования.
                 .HasForeignKey(e => e.EquipmentModelId) //В таблице Equipments будет столбец ModelId, который ссылается на первичный ключ таблицы Models.
                 .OnDelete(DeleteBehavior.Cascade); //Если запись Model будет удалена, то все связанные с ней записи Equipment будут автоматически удалены каскадно.
+
+            //Связь одно оборудование один картридж
+            builder.HasOne(e => e.Cartridge)// Оборудование имеет один картридж
+                .WithMany(c => c.Equipments)// Картридж может быть установлен в нескольких оборудованиях
+                .HasForeignKey(e => e.CartridgeId);// Внешний ключ в Equipment
         }
     }
 }

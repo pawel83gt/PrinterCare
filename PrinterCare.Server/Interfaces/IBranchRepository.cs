@@ -8,7 +8,7 @@ namespace PrinterCare.Server.Interfaces
         Task <IEnumerable<BranchDto>> GetAllAsync();
         Task<BranchDto?> GetByIdAsync(Guid id);
         Task AddAsync(Branch branch);
-        Task UpdateAsync(UpdateBranchDto dto);
+        Task UpdateAsync(Branch branch);
         Task DeleteAsync(Guid id);
         Task<bool> ExistsAsync(string name);
     }

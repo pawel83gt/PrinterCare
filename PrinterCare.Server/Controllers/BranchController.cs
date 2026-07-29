@@ -2,6 +2,7 @@
 using PrinterCare.Server.DTOs.Branch;
 using PrinterCare.Server.Entities;
 using PrinterCare.Server.Interfaces;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PrinterCare.Server.Controllers
 {
@@ -46,13 +47,11 @@ namespace PrinterCare.Server.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] UpdateBranchDto dto)
         {
-            if (id != dto.Id)
-                return BadRequest("ID mismatch");
 
             try
             {
-                var updated = await _service.UpdateBranchAsync(dto);
-                return Ok(updated);
+                var (data, message) = await _service.UpdateBranchAsync(id, dto);
+                return Ok(new { data, message });
             }
             catch (KeyNotFoundException ex)
             {

@@ -22,6 +22,9 @@ builder.Services.AddScoped<IManufacturerService, ManufacturerService>();
 builder.Services.AddScoped<IEquipmentModelRepository, EquipmentModelRepository>();
 builder.Services.AddScoped<IEquipmentModelService, EquipmentModelService>();
 
+builder.Services.AddScoped<IEquipmentRepository, EquipmentRepository>();
+builder.Services.AddScoped<IEquipmentService, EquipmentService>();
+
 // Add services to the container.
 
 builder.Services.AddControllers();

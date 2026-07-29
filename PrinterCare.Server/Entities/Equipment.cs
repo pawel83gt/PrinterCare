@@ -11,5 +11,10 @@
         public Guid EquipmentModelId {  get; set; }
         //связь оборудование одной модели
         public EquipmentModel EquipmentModel { get; set; } = null!;
+
+        // ✅ Внешний ключ к картриджу
+        public Guid CartridgeId { get; set; }
+        // ✅ Навигационное свойство к картриджу
+        public Cartridge Cartridge { get; set; } = null!;
     }
 }

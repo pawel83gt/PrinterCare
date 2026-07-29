@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PrinterCare.Server.DTOs.Manufacturer;
 using PrinterCare.Server.DTOs.Organization;
 using PrinterCare.Server.Entities;
 using PrinterCare.Server.Interfaces;
@@ -27,8 +28,8 @@ namespace PrinterCare.Server.Services
                 Name = organization.Name,
             };
         }
-        public async Task<IEnumerable<Organization>> GetAllOrganizationsAsync()
-        {
+        public async Task<IEnumerable<OrganizationDto>> GetAllOrganizationsAsync()
+        {  
             return await _repository.GetAllAsync();
         }
 
@@ -37,18 +38,18 @@ namespace PrinterCare.Server.Services
             return await _repository.GetByIdAsync(id);
         }
 
-        public async Task<OrganizationDto> UpdateOrganizationAsync(OrganizationDto dto)
+        public async Task<(OrganizationDto Data, string Message)> UpdateOrganizationAsync(Guid id, UpdateOrganizationDto dto)
         {
             // 1. Бизнес-правило: нельзя обновить несуществующую организацию
-            OrganizationDto existing = await _repository.GetByIdAsync(dto.Id) ?? throw new KeyNotFoundException($"Organization with id {dto.Id} not found");
+            OrganizationDto existing = await _repository.GetByIdAsync(id) ?? throw new KeyNotFoundException($"Organization with id {id} not found");
 
             // 2. Бизнес-правило: нельзя изменить имя на уже занятое
             if (await _repository.ExistsAsync(dto.Name))
                 throw new InvalidOperationException("Organization with this name already exists");
 
             // 3. Вызов репозитория
-            await _repository.UpdateAsync(dto);
-            return existing;
+            await _repository.UpdateAsync(new Organization { Id = id, Name = dto.Name });
+            return (new OrganizationDto { Id = id, Name = dto.Name }, "Updated successfully.");
         }
 
         public async Task DeleteOrganizationAsync(Guid id)

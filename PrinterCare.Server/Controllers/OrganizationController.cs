@@ -43,15 +43,12 @@ namespace PrinterCare.Server.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] OrganizationDto dto)
+        public async Task<IActionResult> Update(Guid id, [FromBody] UpdateOrganizationDto dto)
         {
-            if (id != dto.Id)
-                return BadRequest("ID mismatch");
-
             try
             {
-                var updated = await _service.UpdateOrganizationAsync(dto);
-                return Ok(updated);
+                var (data, message) = await _service.UpdateOrganizationAsync(id, dto);
+                return Ok(new { data, message });
             }
             catch (KeyNotFoundException ex)
             {
