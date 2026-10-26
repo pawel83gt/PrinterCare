@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PrinterCare.Server.DTOs.Equipment;
-using PrinterCare.Server.DTOs.Manufacturer;
+﻿using PrinterCare.Server.DTOs.Equipment;
 using PrinterCare.Server.Entities;
 using PrinterCare.Server.Interfaces;
 
@@ -78,7 +76,8 @@ namespace PrinterCare.Server.Services
             // 3. Если ничего не изменилось — возвращаем существующий объект
             if (typeUnchanged && branchIdUnchanged && EquipmentModelIdUnchanged)
             {
-                return (new EquipmentDto {
+                return (new EquipmentDto
+                {
                     Type = (int)existing.Type,
                     Alias = existing.Alias,
                     BranchId = existing.BranchId,
@@ -95,7 +94,8 @@ namespace PrinterCare.Server.Services
 
             // 5. Вызов репозитория
             await _repository.UpdateAsync(existing);
-            return (new EquipmentDto {
+            return (new EquipmentDto
+            {
                 Id = id,
                 Type = (int)existing.Type,
                 Alias = existing.Alias,

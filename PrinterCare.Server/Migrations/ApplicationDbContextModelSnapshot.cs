@@ -49,6 +49,28 @@ namespace PrinterCare.Server.Migrations
                     b.ToTable("Branches");
                 });
 
+            modelBuilder.Entity("PrinterCare.Server.Entities.Cartridge", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Cartridges");
+                });
+
             modelBuilder.Entity("PrinterCare.Server.Entities.Equipment", b =>
                 {
                     b.Property<Guid>("Id")
@@ -61,6 +83,9 @@ namespace PrinterCare.Server.Migrations
                         .HasColumnType("character varying(50)");
 
                     b.Property<Guid>("BranchId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CartridgeId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
@@ -78,6 +103,8 @@ namespace PrinterCare.Server.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BranchId");
+
+                    b.HasIndex("CartridgeId");
 
                     b.HasIndex("EquipmentModelId");
 
@@ -206,6 +233,12 @@ namespace PrinterCare.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("PrinterCare.Server.Entities.Cartridge", "Cartridge")
+                        .WithMany("Equipments")
+                        .HasForeignKey("CartridgeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("PrinterCare.Server.Entities.EquipmentModel", "EquipmentModel")
                         .WithMany("Equipments")
                         .HasForeignKey("EquipmentModelId")
@@ -213,6 +246,8 @@ namespace PrinterCare.Server.Migrations
                         .IsRequired();
 
                     b.Navigation("Branch");
+
+                    b.Navigation("Cartridge");
 
                     b.Navigation("EquipmentModel");
                 });
@@ -229,6 +264,11 @@ namespace PrinterCare.Server.Migrations
                 });
 
             modelBuilder.Entity("PrinterCare.Server.Entities.Branch", b =>
+                {
+                    b.Navigation("Equipments");
+                });
+
+            modelBuilder.Entity("PrinterCare.Server.Entities.Cartridge", b =>
                 {
                     b.Navigation("Equipments");
                 });

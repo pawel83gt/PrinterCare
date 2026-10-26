@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using PrinterCare.Server.DTOs.Organization;
-using PrinterCare.Server.Entities;
 using PrinterCare.Server.Interfaces;
 
 namespace PrinterCare.Server.Controllers

@@ -66,7 +66,7 @@ namespace PrinterCare.Server.Repositories
         public async Task AddAsync(Organization organization)
         {
             // Добавляем организацию в контекст и сохраняем в БД
-            await _context.Organizations.AddAsync(organization);
+            _context.Organizations.Add(organization);
             await _context.SaveChangesAsync();
         }
 

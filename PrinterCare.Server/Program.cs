@@ -1,77 +1,51 @@
 using Microsoft.EntityFrameworkCore;
 using PrinterCare.Server.Data;
-using PrinterCare.Server.Entities;
-using PrinterCare.Server.Interfaces;
-using PrinterCare.Server.Repositories;
-using PrinterCare.Server.Services;
+using PrinterCare.Server.Extentions;
 
 var builder = WebApplication.CreateBuilder(args);
 //Подключение БД
-builder.Services.AddDbContext<ApplicationDbContext>(o => o.UseNpgsql(builder.Configuration.GetConnectionString("printersDB")));
+var connectionString = builder.Configuration.GetConnectionString("printersDB")
+    ?? throw new InvalidOperationException("Connection string 'printersDB' not found.");
+builder.Services.AddDbContext<ApplicationDbContext>(o => o.UseNpgsql(connectionString));
 
-// Регистрация репозиториев
-builder.Services.AddScoped<IOrganizationRepository, OrganizationRepository>();
-builder.Services.AddScoped<IOrganizationService, OrganizationService>();
-
-builder.Services.AddScoped<IBranchRepository, BranchRepository>();
-builder.Services.AddScoped<IBranchService, BranchService>();
-
-builder.Services.AddScoped<IManufacturerRepository, ManufacturerRepository>();
-builder.Services.AddScoped<IManufacturerService, ManufacturerService>();
-
-builder.Services.AddScoped<IEquipmentModelRepository, EquipmentModelRepository>();
-builder.Services.AddScoped<IEquipmentModelService, EquipmentModelService>();
-
-builder.Services.AddScoped<IEquipmentRepository, EquipmentRepository>();
-builder.Services.AddScoped<IEquipmentService, EquipmentService>();
-
-// Add services to the container.
+builder.Services.AddApplicationServices(); // регистрации репозиториев и сервисов
 
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
-builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddProblemDetails();
 builder.Services.AddSwaggerGen();
+
+var allowedOrigins = builder.Configuration.GetSection("Cors:Origins").Get<string[]>() ?? [];
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("ReactPolicy", policy =>
-    {
-        policy
-        .WithOrigins("https://localhost:5173")
+    options.AddPolicy("ReactPolicy", policy => policy
+        .WithOrigins(allowedOrigins)
         .AllowAnyHeader()
-        .AllowAnyMethod();
-    });
+        .AllowAnyMethod());
 });
 
 var app = builder.Build();
-app.UseRouting();
 
-app.UseCors("ReactPolicy");
-
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    db.Database.Migrate();
-}
-
-app.UseDefaultFiles();
-app.MapStaticAssets();
-
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    using var scope = app.Services.CreateScope();
+    scope.ServiceProvider.GetRequiredService<ApplicationDbContext>().Database.Migrate();
+}
+else
+{
+    app.UseExceptionHandler();
 }
 
 app.UseHttpsRedirection();
-app.UseRouting();
+app.UseDefaultFiles();
+app.MapStaticAssets();
 
+app.UseCors("ReactPolicy");
 app.UseAuthorization();
 
 app.MapControllers();
-
 app.MapFallbackToFile("/index.html");
 
 app.Run();

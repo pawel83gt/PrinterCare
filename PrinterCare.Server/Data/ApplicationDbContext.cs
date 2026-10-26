@@ -11,6 +11,7 @@ namespace PrinterCare.Server.Data
         public DbSet<Manufacturer> Manufacturers { get; set; }
         public DbSet<EquipmentModel> EquipmentModels { get; set; }
         public DbSet<Equipment> Equipments { get; set; }
+        public DbSet<Cartridge> Cartridges { get; set; }
 
         //конструктор принимает параметр options — это объект, который содержит все настройки контекста
         //(например, строку подключения, провайдер базы данных, логирование и т.д.).

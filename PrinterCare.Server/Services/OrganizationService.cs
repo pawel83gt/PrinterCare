@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PrinterCare.Server.DTOs.Manufacturer;
-using PrinterCare.Server.DTOs.Organization;
+﻿using PrinterCare.Server.DTOs.Organization;
 using PrinterCare.Server.Entities;
 using PrinterCare.Server.Interfaces;
 
