@@ -16,6 +16,8 @@ namespace PrinterCare.Server.Repositories
 
         // 3. Реализуем методы интерфейса
 
+        public async Task<Organization?> FindAsync(Guid id) => await _context.Organizations.FindAsync(id);
+
         public async Task<IEnumerable<OrganizationDto>> GetAllAsync()
         {
             return await _context.Organizations
@@ -60,7 +62,7 @@ namespace PrinterCare.Server.Repositories
                         })
                         .ToList()
                 })
-                .FirstOrDefaultAsync(); ;
+                .FirstOrDefaultAsync();
         }
 
         public async Task AddAsync(Organization organization)
@@ -72,26 +74,25 @@ namespace PrinterCare.Server.Repositories
 
         public async Task UpdateAsync(Organization organization)
         {
-            // Обновляем только нужные поля (чтобы не перезаписать другие данные)
-            _context.Entry(organization).State = EntityState.Modified;
+            // сущность уже отслеживается (загружена через FindAsync),
+            // EF сам знает, что изменилось, поэтому достаточно сохранить
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(OrganizationDto dto)
+        public async Task DeleteAsync(Organization organization)
         {
-            var organization = await _context.Organizations.FindAsync(dto.Id);
-            if (organization == null)
-                return;
-            
             _context.Organizations.Remove(organization);
             await _context.SaveChangesAsync();
         }
 
-        public async Task<bool> ExistsAsync(string name)
+        public async Task<bool> ExistsAsync(string name, Guid? excludeId = null)
         {
-            // Проверяем, существует ли организация с таким названием
-            return await _context.Organizations
-                .AnyAsync(o => o.Name == name);
+            var query = _context.Organizations.Where(o => o.Name == name);
+
+            if (excludeId is { } id) //если значение передано, положи его в id и добавь условие Id != id
+                query = query.Where(o => o.Id != id);
+
+            return await query.AnyAsync();
         }
     }
 }

@@ -12,12 +12,13 @@ namespace PrinterCare.Server.Services
 
         public async Task<OrganizationDto?> CreateOrganizationAsync(CreateOrganizationDto dto)
         {
+            var name = dto.Name.Trim();
             // Логика проверки (существует ли уже организация с таким названием)
-            if (await _repository.ExistsAsync(dto.Name))
+            if (await _repository.ExistsAsync(name))
                 return null;
             var organization = new Organization 
             {
-                Name = dto.Name,
+                Name = name,
             };
             await _repository.AddAsync(organization);
             return new OrganizationDto
@@ -38,26 +39,29 @@ namespace PrinterCare.Server.Services
 
         public async Task<(OrganizationDto Data, string Message)> UpdateOrganizationAsync(Guid id, UpdateOrganizationDto dto)
         {
+            var name = dto.Name.Trim();
             // 1. Бизнес-правило: нельзя обновить несуществующую организацию
-            OrganizationDto existing = await _repository.GetByIdAsync(id) ?? throw new KeyNotFoundException($"Organization with id {id} not found");
+            var organization = await _repository.FindAsync(id)
+                ?? throw new KeyNotFoundException($"Organization with id {id} not found");
 
             // 2. Бизнес-правило: нельзя изменить имя на уже занятое
-            if (await _repository.ExistsAsync(dto.Name))
+            if (await _repository.ExistsAsync(name, excludeId: id))
                 throw new InvalidOperationException("Organization with this name already exists");
 
-            // 3. Вызов репозитория
-            await _repository.UpdateAsync(new Organization { Id = id, Name = dto.Name });
+            // 3. Меняем поле у загруженной сущности и сохраняем
+            organization.Name = name;
+            await _repository.UpdateAsync(organization);
+
             return (new OrganizationDto { Id = id, Name = dto.Name }, "Updated successfully.");
         }
 
         public async Task DeleteOrganizationAsync(Guid id)
         {
             // 1. Бизнес-правило: нельзя удалить несуществующую организацию
-            var existing = await _repository.GetByIdAsync(id);
-            if (existing == null)
-                throw new KeyNotFoundException($"Organization with id {id} not found");
+            var organization = await _repository.FindAsync(id)
+                ?? throw new KeyNotFoundException($"Organization with id {id} not found");
 
-             await _repository.DeleteAsync(existing);
+            await _repository.DeleteAsync(organization);
         }
     }
 }

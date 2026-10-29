@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PrinterCare.Server.Data;
+using PrinterCare.Server.Exceptions;
 using PrinterCare.Server.Extentions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,8 @@ builder.Services.AddApplicationServices(); // регистрации репоз�
 builder.Services.AddControllers();
 builder.Services.AddProblemDetails();
 builder.Services.AddSwaggerGen();
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 var allowedOrigins = builder.Configuration.GetSection("Cors:Origins").Get<string[]>() ?? [];
 builder.Services.AddCors(options =>
@@ -24,6 +27,7 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {
@@ -32,10 +36,6 @@ if (app.Environment.IsDevelopment())
 
     using var scope = app.Services.CreateScope();
     scope.ServiceProvider.GetRequiredService<ApplicationDbContext>().Database.Migrate();
-}
-else
-{
-    app.UseExceptionHandler();
 }
 
 app.UseHttpsRedirection();

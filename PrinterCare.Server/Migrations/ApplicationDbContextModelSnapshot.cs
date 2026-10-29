@@ -179,6 +179,9 @@ namespace PrinterCare.Server.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Name")
+                        .IsUnique();
+
                     b.ToTable("Organizations");
                 });
 
@@ -219,7 +222,7 @@ namespace PrinterCare.Server.Migrations
                     b.HasOne("PrinterCare.Server.Entities.Organization", "Organization")
                         .WithMany("Branches")
                         .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Organization");

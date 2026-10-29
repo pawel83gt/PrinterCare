@@ -14,6 +14,8 @@ namespace PrinterCare.Server.Configuration
                 .IsRequired()
                 .HasMaxLength(100);
 
+            builder.HasIndex(o => o.Name).IsUnique(); //задаем уникальность
+
             builder.Property(o => o.CreatedAt)
                 .IsRequired();
 
